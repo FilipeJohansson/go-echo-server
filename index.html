@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Go Echo Server</title>
+  </head>
+  <body>
+    <h1>WebSocket Connection</h1>
+    <input type="text" id="msgInput" placeholder="Write a message" />
+    <button onclick="sendMessage()">Send</button>
+    <ul id="log"></ul>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8080/ws")
+
+      socket.onopen = () => {
+        log("Connecting to WebSocket server")
+      }
+
+      socket.onmessage = (event) => {
+        log("Received: " + event.data)
+      }
+
+      socket.onclose = () => {
+        log("Connection closed")
+      }
+
+      socket.onerror = (error) => {
+        log("Error: " + error.message)
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("msgInput")
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(input.value)
+          log("Send: " + input.value)
+          input.value = ""
+        } else {
+          log("WebSocket not connected")
+        }
+      }
+
+      function log(message) {
+        const li = document.createElement("li")
+        li.textContent = message
+        document.getElementById("log").appendChild(li)
+      }
+    </script>
+  </body>
+</html>
